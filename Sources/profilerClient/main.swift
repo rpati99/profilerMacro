@@ -2,7 +2,7 @@ import profiler
 
 let a = 17
 let b = 25
+ 
+let code: () = #profiler
 
-let (result, code) = #stringify(a + b)
-
-print("The value \(result) was produced by the code \"\(code)\"")
+print("The value \(code) was produced by the code \"\(code)\"")

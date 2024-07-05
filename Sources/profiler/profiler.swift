@@ -7,5 +7,8 @@
 ///     #stringify(x + y)
 ///
 /// produces a tuple `(x + y, "x + y")`.
+//@freestanding(expression)
+//public macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "profilerMacros", type: "StringifyMacro")
+
 @freestanding(expression)
-public macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "profilerMacros", type: "StringifyMacro")
+public macro profiler() = #externalMacro(module: "profilerMacros", type: "ProfilerMacro")
