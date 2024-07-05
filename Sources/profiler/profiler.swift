@@ -11,4 +11,4 @@
 //public macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "profilerMacros", type: "StringifyMacro")
 
 @freestanding(expression)
-public macro profiler() = #externalMacro(module: "profilerMacros", type: "ProfilerMacro")
+public macro profiler() = #externalMacro(module: "profilerMacros", type: "profilerMacro")

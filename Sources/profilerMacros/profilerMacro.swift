@@ -12,7 +12,7 @@ public struct profilerMacro: ExpressionMacro {
     ) throws -> ExprSyntax {
         
         
-        _ = ProfilerMacro.createSourceCode()
+        _ = profilerMacro.createSourceCode()
     }
 
     static private func createVariable(identifier: String, expression: String) -> VariableDeclSyntax {
@@ -94,6 +94,6 @@ public struct profilerMacro: ExpressionMacro {
 @main
 struct profilerPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        ProfilerMacro.self,
+        profilerMacro.self,
     ]
 }
