@@ -20,25 +20,32 @@ final class profilerMacroTests: XCTestCase {
         assertMacroExpansion(
             "#profile()",
             expandedSource: #"""
-        class Profile {
-            private func initStartTime() {
-                let startTime = DispatchTime.now()
-            }
+            class Profile {
+                private var startTime: DispatchTime?
 
-            private func calculateTime() {
-                let endTime = DispatchTime.now()
-                let timeElapsedInNanoSeconds = endTime.timeInNanoseconds - startTime.timeInNanoseonds
-                let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
-                debugPrint(timeElapsedInSeconds)
-            }
+                private func initStartTime() {
+                    startTime = DispatchTime.now()
+                }
 
-            func measureTime() -> Double {
-                initStartTime()
-                defer {
-                    calculateTime()
+                private func calculateTime() {
+                    guard let startTime = self.startTime else {
+                        print("Start time not initialized")
+                        return
+                    }
+                    let endTime = DispatchTime.now()
+                    let timeElapsedInNanoSeconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
+                    let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
+                    debugPrint(timeElapsedInSeconds)
+                }
+
+                @discardableResult
+                func measureTime(codeBlock: () -> Void) {
+                    initStartTime()
+                    defer {
+                        calculateTime()
+                    }
                 }
             }
-        }
         """#,
             macros: testMacros)
         #else

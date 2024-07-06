@@ -34,18 +34,24 @@ public struct ProfileMacro: DeclarationMacro {
         return [
         """
         class Profile {
+            private var startTime: DispatchTime?
+
             private func initStartTime() {
-                let startTime = DispatchTime.now()
+                startTime = DispatchTime.now()
             }
 
             private func calculateTime() {
+                guard let startTime = self.startTime else {
+                    print("Start time not initialized")
+                    return
+                }
                 let endTime = DispatchTime.now()
-                let timeElapsedInNanoSeconds = endTime.timeInNanoseconds - startTime.timeInNanoseonds
+                let timeElapsedInNanoSeconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
                 let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
                 debugPrint(timeElapsedInSeconds)
             }
-
-            func measureTime() -> Double {
+        
+            func measureTime(codeBlock: () -> Void) {
                 initStartTime()
                 defer {
                     calculateTime()

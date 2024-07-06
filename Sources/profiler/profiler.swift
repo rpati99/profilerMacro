@@ -7,5 +7,5 @@
 ///     #stringify(x + y)
 ///
 /// produces a tuple `(x + y, "x + y")`.
-@freestanding(declaration)
+@freestanding(declaration, names: named(Profile))
 public macro profile() = #externalMacro(module: "profilerMacros", type: "ProfileMacro")
