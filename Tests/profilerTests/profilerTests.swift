@@ -9,40 +9,43 @@ import XCTest
 import profilerMacros
 
 let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "profile": ProfileMacro.self
+    
 ]
 #endif
 
-final class profilerTests: XCTestCase {
-    func testMacro() throws {
+final class profilerMacroTests: XCTestCase {
+    func testProfileMacro() throws {
         #if canImport(profilerMacros)
         assertMacroExpansion(
-            """
-            #stringify(a + b)
-            """,
-            expandedSource: """
-            (a + b, "a + b")
-            """,
-            macros: testMacros
-        )
-        #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
-        #endif
-    }
-
-    func testMacroWithStringLiteral() throws {
-        #if canImport(profilerMacros)
-        assertMacroExpansion(
-            #"""
-            #stringify("Hello, \(name)")
-            """#,
+            "#profile()",
             expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
-            macros: testMacros
-        )
+        class Profile {
+            private func initStartTime() {
+                let startTime = DispatchTime.now()
+            }
+
+            private func calculateTime() {
+                let endTime = DispatchTime.now()
+                let timeElapsedInNanoSeconds = endTime.timeInNanoseconds - startTime.timeInNanoseonds
+                let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
+                debugPrint(timeElapsedInSeconds)
+            }
+
+            func measureTime() -> Double {
+                initStartTime()
+                defer {
+                    calculateTime()
+                }
+            }
+        }
+        """#,
+            macros: testMacros)
         #else
         throw XCTSkip("macros are only supported when running tests for the host platform")
         #endif
     }
+    
+    
+    
 }
