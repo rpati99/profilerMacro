@@ -9,36 +9,45 @@ import XCTest
 import timingMacroMacros
 
 let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "timify": TimingMacro.self,
 ]
 #endif
 
 final class timingMacroTests: XCTestCase {
-    func testMacro() throws {
-        #if canImport(timingMacroMacros)
-        assertMacroExpansion(
-            """
-            #stringify(a + b)
-            """,
-            expandedSource: """
-            (a + b, "a + b")
-            """,
-            macros: testMacros
-        )
-        #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
-        #endif
-    }
-
-    func testMacroWithStringLiteral() throws {
+    
+    func testTimingMacro() throws {
         #if canImport(timingMacroMacros)
         assertMacroExpansion(
             #"""
-            #stringify("Hello, \(name)")
+            #timify()
             """#,
-            expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
+            expandedSource: """
+        class Profile {
+            private var startTime: DispatchTime?
+
+            private func initStartTime() {
+                startTime = DispatchTime.now()
+            }
+
+            private func calculateTime() {
+                guard let startTime = self.startTime else {
+                    print("Start time not initialized")
+                    return
+                }
+                let endTime = DispatchTime.now()
+                let timeElapsedInNanoSeconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
+                let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
+                debugPrint(timeElapsedInSeconds)
+            }
+        
+            func measureTime(codeBlock: () -> Void) {
+                initStartTime()
+                do {
+                    calculateTime()
+                }
+            }
+        }
+        """,
             macros: testMacros
         )
         #else
