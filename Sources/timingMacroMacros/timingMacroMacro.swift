@@ -2,52 +2,43 @@ import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import SwiftParser
 
-/// Implementation of the `stringify` macro, which takes an expression
-/// of any type and produces a tuple containing the value of that expression
-/// and the source code that produced the value. For example
-///
-///     #stringify(x + y)
-///
-///  will expand to
-///
-///     (x + y, "x + y")
+enum MacroExpansionError: Error {
+    case message(String)
+}
 
-public struct TimingMacro :DeclarationMacro {
-    public static func expansion(of node: some SwiftSyntax.FreestandingMacroExpansionSyntax, in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.DeclSyntax] {
-        return [
-        """
-        class Profile {
-            private var startTime: DispatchTime?
-
-            private func initStartTime() {
-                startTime = DispatchTime.now()
-            }
-
-            private func calculateTime() {
-                guard let startTime = self.startTime else {
-                    print("Start time not initialized")
-                    return
+public struct TimingMacro: DeclarationMacro {
+    public static func expansion(
+        of node: some FreestandingMacroExpansionSyntax,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+        // Extract the code block from the macro argument
+        guard let codeBlock = node.argumentList.first?.expression.as(ClosureExprSyntax.self) else {
+                    fatalError("Expected a code block as the argument.")
                 }
-                let endTime = DispatchTime.now()
-                let timeElapsedInNanoSeconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
-                let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
-                debugPrint(timeElapsedInSeconds)
-            }
+        let startTimeCodeBlock = CodeBlockItemSyntax(stringLiteral: "let startTime = DispatchTime.now()")
+        let newCodeBlock = CodeBlockItemSyntax(item: .expr(codeBlock.as(ExprSyntax.self)!))
+        let timeElapsedCodeBlock =  CodeBlockItemSyntax(stringLiteral: """
+            let endTime = DispatchTime.now()
+            let timeElapsedInNanoSeconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
+            let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
+            print("Time elapsed: \\(timeElapsedInSeconds) seconds")
+            """)
         
-            func measureTime(codeBlock: () -> Void) {
-                initStartTime()
-                do {
-                    calculateTime()
-                }
-            }
-        }
-        """
-        ]
+        var newStatementCodeBlock = [CodeBlockItemSyntax]()
+        newStatementCodeBlock.append(startTimeCodeBlock)
+        newStatementCodeBlock.append(newCodeBlock)
+        newStatementCodeBlock.append(timeElapsedCodeBlock)
+        
+        let newBlock = CodeBlockSyntax {
+              for item in newStatementCodeBlock {
+                  item
+              }
+          }
+        
+        return [newBlock.as(DeclSyntax.self)!]
     }
-    
-    
-    
 }
 
 @main
