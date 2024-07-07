@@ -25,8 +25,7 @@ public struct TimingMacro: DeclarationMacro {
         }
 
         let timeWrappedCode = """
-        class Profile {
-            static func measure() {
+            func measure() {
                 let startTime = DispatchTime.now()
                 defer {
                     let endTime = DispatchTime.now()
@@ -38,7 +37,6 @@ public struct TimingMacro: DeclarationMacro {
                 print("Executing profiled code...")
                 print("Sample output from profiled code: This runs automatically!")
             }
-        }
         """
         
         return [DeclSyntax(stringLiteral: timeWrappedCode)]
