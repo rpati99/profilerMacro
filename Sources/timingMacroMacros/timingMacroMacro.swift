@@ -5,7 +5,14 @@ import SwiftSyntaxMacros
 import SwiftParser
 
 enum MacroExpansionError: Error {
-    case message(String)
+    case invalidExpression
+    
+    var description: String {
+        switch self {
+        case .invalidExpression:
+            return "expression is not a closure"
+        }
+    }
 }
 
 public struct TimingMacro: DeclarationMacro {
@@ -14,21 +21,22 @@ public struct TimingMacro: DeclarationMacro {
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         guard let declaration = node.argumentList.first?.expression.as(ClosureExprSyntax.self)?.statements else {
-//            throw fatalError("The #timify macro must be attached to a valid declaration.")
-            return []
+            throw MacroExpansionError.invalidExpression
         }
 
         let timeWrappedCode = """
-        func run() {
-            do {
+        class Profile {
+            static func measure() {
                 let startTime = DispatchTime.now()
                 defer {
                     let endTime = DispatchTime.now()
                     let nanoseconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
                     let milliseconds = Double(nanoseconds) / 1_000_000
-                    print(milliseconds)
+                    print("Execution Time: \\(milliseconds) milliseconds")
                 }
                 \(declaration)
+                print("Executing profiled code...")
+                print("Sample output from profiled code: This runs automatically!")
             }
         }
         """

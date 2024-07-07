@@ -1,4 +1,3 @@
-import Foundation
-import timingMacro
 import timingMacroMacros
+import timingMacro
 
