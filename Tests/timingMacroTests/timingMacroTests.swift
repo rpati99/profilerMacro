@@ -34,13 +34,13 @@ final class timingMacroTests: XCTestCase {
             }
 
             // Public method to log the execution time with a description
-            public func logExecutionTime(withDescription description: String) {
+            public static func logExecutionTime(withDescription description: String) {
                 let duration = measureExecutionTime()
                 print("\\(description): Took \\(duration) seconds")
             }
 
             // Public method to measure and return the average execution time of a closure repeated a specified number of times
-            public func measureAverageTime(repeatCount: Int) -> TimeInterval {
+            public static func measureAverageTime(repeatCount: Int) -> TimeInterval {
                 guard repeatCount > 0 else {
                     print("Repeat count must be greater than 0.")
                     return 0
