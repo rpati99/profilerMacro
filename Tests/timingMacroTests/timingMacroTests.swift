@@ -23,19 +23,19 @@ final class timingMacroTests: XCTestCase {
             })
             """#,
             expandedSource: """
-            func run() {
-                do {
-                    let startTime = DispatchTime.now()
-                    defer {
-                        let endTime = DispatchTime.now()
-                        let nanoseconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
-                        let milliseconds = Double(nanoseconds) / 1_000_000
-                        print(milliseconds)
-                    }
+            func measure() {
+                            let startTime = DispatchTime.now()
+                            defer {
+                                    let endTime = DispatchTime.now()
+                                    let nanoseconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
+                                    let milliseconds = Double(nanoseconds) / 1_000_000
+                                    print("Execution Time: \\(milliseconds) milliseconds")
+                            }
 
-                print("Hello World")
+                        print("Hello World")
+                            print("Executing profiled code...")
+                            print("Sample output from profiled code: This runs automatically!")
                 }
-            }
             """,
             macros: testMacros
         )
