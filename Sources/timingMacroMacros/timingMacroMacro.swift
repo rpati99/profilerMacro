@@ -4,16 +4,7 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftParser
 
-enum MacroExpansionError: Error {
-    case invalidExpression
-    
-    var description: String {
-        switch self {
-        case .invalidExpression:
-            return "expression is not a closure"
-        }
-    }
-}
+
 
 public struct TimingMacro: DeclarationMacro {
     public static func expansion(
@@ -58,9 +49,3 @@ public struct TimingMacro: DeclarationMacro {
     }
 }
 
-@main
-struct timingMacroPlugin: CompilerPlugin {
-    let providingMacros: [Macro.Type] = [
-        TimingMacro.self,
-    ]
-}
