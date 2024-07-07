@@ -1,10 +1,4 @@
 import Foundation
-import timingMacroMacros
 import timingMacro
+import timingMacroMacros
 
-
-#timify({
-    for _ in 1...1000 {
-        print("lol")
-    }
-})

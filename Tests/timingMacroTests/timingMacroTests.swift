@@ -18,25 +18,25 @@ final class timingMacroTests: XCTestCase {
         #if canImport(timingMacroMacros)
         assertMacroExpansion(
             #"""
-            #timify ({
-                var i = 0
-                for _ in 1_000 {
-                    i += 1
-                }
+            #timify({
+                print("Hello World")
             })
             """#,
             expandedSource: """
-                let startTime = DispatchTime.now()
-                    
-                        var i = 0
-                        for _ in 1_000 {
-                            i += 1
-                        }
-                    let endTime = DispatchTime.now()
-                    let timeElapsedInNanoSeconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
-                    let timeElapsedInSeconds = Double(timeElapsedInNanoSeconds) / 1_000_000_000
-                    print("Time elapsed: \\(timeElapsedInSeconds) seconds")
-                """,
+            func run() {
+                do {
+                    let startTime = DispatchTime.now()
+                    defer {
+                        let endTime = DispatchTime.now()
+                        let nanoseconds = endTime.uptimeNanoseconds - startTime.uptimeNanoseconds
+                        let milliseconds = Double(nanoseconds) / 1_000_000
+                        print(milliseconds)
+                    }
+
+                print("Hello World")
+                }
+            }
+            """,
             macros: testMacros
         )
         #else
