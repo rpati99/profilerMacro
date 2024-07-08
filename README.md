@@ -6,11 +6,16 @@ Usage
 > #timify({ code here })
 
 for example:
-> #timify({ 
+> #timify({
+> 
 >   var count = 0
->   for _ in 0...1_000 { 
->       count += 1
->   }
+> 
+>   for _ in 0...1_000 {
+> 
+> count += 1
+> 
+>    }
+> 
 > })
 
 Method access:- 
