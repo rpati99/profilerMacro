@@ -25,7 +25,7 @@ final class timingMacroTests: XCTestCase {
             expandedSource: """
         class CodePerformanceAnalyzer {
             // Measures the execution time of a closure
-            private func measureExecutionTime() -> TimeInterval {
+            private static func measureExecutionTime() -> TimeInterval {
                 let startTime = Date()
 
             print("Hello World")
